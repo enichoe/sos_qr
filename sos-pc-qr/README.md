@@ -1,6 +1,6 @@
 # SOS PC QR — Mesa de ayuda web
 
-Aplicación estática con HTML, CSS, JavaScript y Supabase. QR general y QR individuales por equipo, registro público, seguimiento privado por token, panel técnico, inventario e historial.
+Aplicación estática con HTML, CSS, JavaScript y Supabase. Imágenes ilustrativas de soporte en Inicio y por equipo, registro público, seguimiento privado por token, panel técnico, inventario e historial.
 
 ## Instalación
 1. Crea un proyecto Supabase en https://supabase.com y abre **SQL Editor**.
@@ -11,8 +11,8 @@ Aplicación estática con HTML, CSS, JavaScript y Supabase. QR general y QR indi
    Para un técnico usa rol `tecnico`.
 5. En `config.js`, reemplaza `SUPABASE_URL` y `SUPABASE_ANON_KEY` con **Project URL** y la **publishable key** (o legacy anon key). **Nunca uses `service_role` ni una clave secreta**.
 6. Publica los archivos en un hosting HTTPS (Netlify, Vercel, GitHub Pages) o inicia un servidor local en la carpeta: `python -m http.server 8080`, luego abre `http://localhost:8080`.
-7. Ingresa al **Panel técnico** para registrar ubicaciones y equipos. Imprime sus QR. El QR general aparece en Inicio.
-8. Escanea un QR, reporta una falla, guarda el enlace privado del ticket y realiza el seguimiento.
+7. Ingresa al **Panel técnico** para registrar ubicaciones y equipos. Puedes imprimir las imágenes ilustrativas; no son códigos QR.
+8. Usa **Crear reporte** para reportar una falla, guarda el enlace privado del ticket y realiza el seguimiento.
 
 ## Modelo de permisos
 - Visitantes anónimos: leen el catálogo de equipos/ubicaciones; crean tickets mediante RPC; consultan **solo con número y token**.

@@ -29,7 +29,7 @@
         <div class="hero">
           <div>
             <span class="eyebrow">SOPORTE INFORMÁTICO INSTITUCIONAL</span>
-            <h1>Escanea, reporta y recibe una solución técnica.</h1>
+            <h1>Reporta una falla y recibe una solución técnica.</h1>
             <p>
               Registra fallas de computadoras y periféricos, recibe un ticket y
               consulta el progreso de la atención.
@@ -41,10 +41,9 @@
               <button data-view="consultar">Consultar estado</button>
             </div>
           </div>
-          <div class="hero-qr">
-            <div id="generalQR"></div>
-            <b></b
-            ><small>Escanea para reportar cualquier equipo</small>
+          <div class="hero-image">
+            <div id="generalSupportImage"></div>
+            <small>Servicio de soporte técnico</small>
           </div>
         </div>
         <div class="features">
@@ -276,12 +275,12 @@
           </div>
           <div class="card" id="inventoryCard">
             <div class="toolbar">
-              <h2>Inventario y QR por equipo</h2>
-              <button id="printQrs">Imprimir QR</button>
+              <h2>Inventario y fotos de soporte</h2>
+              <button id="printQrs">Imprimir fotos</button>
             </div>
             <p class="hint">
-              Solo administradores pueden registrar nuevos equipos. Cada QR
-              dirige al formulario con el equipo preseleccionado.
+              Solo administradores pueden registrar nuevos equipos. Se muestra
+              una imagen ilustrativa de soporte técnico para cada equipo.
             </p>
             <form id="equipForm" class="form-grid">
               <label
@@ -324,7 +323,6 @@
       SOS PC QR · Proyecto académico de Computación e Informática - CICLO II - Curso :
       Reparación de Equipos de Computo - 2026
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <script type="module" src="app.js"></script>
   </body>
 </html>
