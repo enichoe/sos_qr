@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>SOS PC QR | Mesa de ayuda</title>
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="diagnostico.css" />
     <style>
       .hero {
         background:
-          linear-gradient(rgba(18, 52, 82, 0.72), rgba(18, 52, 82, 0.72)),
-          url("img2.jpg") center / cover no-repeat;
+          linear-gradient(to right, rgba(14, 25, 40, 0.95) 0%, rgba(14, 25, 40, 0.7) 60%, rgba(14, 25, 40, 0.4) 100%),
+          url("hero_repair.jpg") center / cover no-repeat;
       }
       .tips-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -53,43 +54,42 @@
         ><button data-view="cuidados">Cuida tu equipo</button
         ><button data-view="reportar">Reportar</button
         ><button data-view="consultar">Consultar ticket</button
-        ><button data-view="panel">Panel técnico</button>
+        ><button data-view="panel">Panel técnico</button
+        ><button data-view="diagnostico" id="navDiag" style="display:none">🔬 Diagnóstico</button>
       </nav>
     </header>
     <main>
       <section id="inicio" class="view active">
         <div class="hero">
           <div>
-            <span class="eyebrow">SOPORTE INFORMÁTICO INSTITUCIONAL</span>
-            <h1>Reporta una falla y recibe una solución técnica.</h1>
-            <p>
-              Registra fallas de computadoras y periféricos, recibe un ticket y
-              consulta el progreso de la atención.
+            <span class="eyebrow" style="color:#6ee7b7">LABORATORIO DE REPARACIÓN Y DIAGNÓSTICO</span>
+            <h1 style="font-size: clamp(32px, 5vw, 56px); font-weight: 800; letter-spacing: -1px; text-shadow: 0 4px 20px rgba(0,0,0,0.5);">Soporte técnico experto para tu hardware.</h1>
+            <p style="font-size: 18px; max-width: 540px; color: #94a3b8; text-shadow: 0 2px 10px rgba(0,0,0,0.8);">
+              Diagnóstico especializado, reparación de computadoras y soporte de TI. Ingresa tu equipo y obtén soluciones precisas respaldadas por herramientas profesionales.
             </p>
-            <div class="actions">
-              <button class="primary" data-view="reportar">
-                Crear reporte →
+            <div class="actions" style="margin-top: 32px">
+              <button class="primary" data-view="reportar" style="background:#10b981; border-color:#10b981; font-size:16px; padding:12px 24px; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);">
+                Ingresar equipo al taller →
               </button>
-              <button data-view="consultar">Consultar estado</button>
-              <button data-view="cuidados">Consejos de cuidado</button>
+              <button data-view="consultar" style="background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.2); font-size:16px; padding:12px 24px; backdrop-filter: blur(10px);">Consultar diagnóstico</button>
             </div>
           </div>
         </div>
-        <div class="features">
-          <article>
-            <span>①</span>
-            <h3>Reporte rápido</h3>
-            <p>Sin instalar aplicaciones.</p>
+        <div class="features" style="margin-top: -30px; position: relative; z-index: 10;">
+          <article style="background: white; border-radius: 16px; padding: 28px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); transition: transform 0.2s; border-top: 4px solid #10b981;">
+            <span style="font-size: 40px; margin-bottom: 15px; display: block;">🛠️</span>
+            <h3 style="margin: 0 0 8px; color: #0f172a; font-size: 18px;">Diagnóstico Preciso</h3>
+            <p style="margin: 0; color: #64748b; font-size: 14px; line-height: 1.6;">Herramientas avanzadas para identificar fallas a nivel de hardware y software.</p>
           </article>
-          <article>
-            <span>②</span>
-            <h3>Ticket de seguimiento</h3>
-            <p>Consulta con un enlace privado.</p>
+          <article style="background: white; border-radius: 16px; padding: 28px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); transition: transform 0.2s; border-top: 4px solid #3b82f6;">
+            <span style="font-size: 40px; margin-bottom: 15px; display: block;">⚙️</span>
+            <h3 style="margin: 0 0 8px; color: #0f172a; font-size: 18px;">Reparación Integral</h3>
+            <p style="margin: 0; color: #64748b; font-size: 14px; line-height: 1.6;">Mantenimiento preventivo, correctivo y reemplazo de componentes dañados.</p>
           </article>
-          <article>
-            <span>③</span>
-            <h3>Atención documentada</h3>
-            <p>Diagnósticos, estados e historial.</p>
+          <article style="background: white; border-radius: 16px; padding: 28px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); transition: transform 0.2s; border-top: 4px solid #f59e0b;">
+            <span style="font-size: 40px; margin-bottom: 15px; display: block;">📊</span>
+            <h3 style="margin: 0 0 8px; color: #0f172a; font-size: 18px;">Historial Clínico de PC</h3>
+            <p style="margin: 0; color: #64748b; font-size: 14px; line-height: 1.6;">Registro detallado de temperaturas, voltajes y estado SMART de cada equipo.</p>
           </article>
         </div>
       </section>
@@ -418,6 +418,74 @@
               /><button type="submit">Agregar ubicación</button>
             </form>
             <div id="equipCards" class="qr-grid"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════
+           SECCIÓN: DIAGNÓSTICO DEL SISTEMA
+           Solo visible tras autenticación (controlado en JS)
+           ══════════════════════════════════════════════════ -->
+      <section id="diagnostico" class="view">
+        <div class="heading">
+          <h1>Diagnóstico del Sistema</h1>
+          <p>Importa el informe generado por la herramienta local y guarda los resultados vinculados al equipo.</p>
+        </div>
+
+        <!-- ── Barra de acciones ───────────────────────────── -->
+        <div class="diag-actions">
+          <label for="diagEquipoSelect">Equipo del inventario
+            <select id="diagEquipoSelect"><option value="">— Seleccionar equipo —</option></select>
+          </label>
+          <label for="diagTicketSelect">Vincular ticket (opcional)
+            <select id="diagTicketSelect"><option value="">Sin ticket asociado</option></select>
+          </label>
+          <button id="diagBtnDownloadTool" class="btn-download-tool">⬇️ Descargar herramienta</button>
+          <button id="diagBtnImport" class="btn-import">📂 Importar diagnóstico</button>
+          <button id="diagBtnSave" class="btn-save">💾 Guardar diagnóstico</button>
+          <button id="diagBtnPdf" class="btn-pdf">📄 Generar PDF</button>
+          <input type="file" id="diagFileInput" accept=".json,application/json" />
+        </div>
+
+        <!-- ── Instrucciones (estado vacío) ──────────────── -->
+        <div id="diagInstructions" class="diag-instructions">
+          <div class="diag-icon">🔬</div>
+          <h3>¿Cómo obtener el diagnóstico?</h3>
+          <p>Descarga y ejecuta <strong>DiagnosticoTool.exe</strong> en el equipo a diagnosticar. La herramienta es de solo lectura y genera un archivo <code>diagnostico.json</code>. Luego impórtalo aquí.</p>
+          <div class="diag-steps">
+            <div class="diag-step"><span class="diag-step-num">1</span>Selecciona el equipo del inventario</div>
+            <div class="diag-step"><span class="diag-step-num">2</span>Descarga DiagnosticoTool</div>
+            <div class="diag-step"><span class="diag-step-num">3</span>Ejecútala en el equipo (como Administrador)</div>
+            <div class="diag-step"><span class="diag-step-num">4</span>Importa el archivo JSON generado</div>
+            <div class="diag-step"><span class="diag-step-num">5</span>Revisa y guarda el diagnóstico</div>
+          </div>
+        </div>
+
+        <!-- ── Mensaje de estado ──────────────────────────── -->
+        <div id="diagMsg" aria-live="polite"></div>
+
+        <!-- ── Resultados (oculto hasta importar) ─────────── -->
+        <div id="diagResults" hidden>
+          <div class="diag-header">
+            <h2>Resultado del diagnóstico</h2>
+            <div class="diag-meta" id="diagMeta"></div>
+          </div>
+          <!-- Grid de tarjetas de hardware -->
+          <div class="diag-grid" id="diagGrid"></div>
+          <!-- Observaciones del técnico -->
+          <div class="card" style="margin-bottom:18px">
+            <h3 style="margin:0 0 10px">Observaciones del técnico</h3>
+            <textarea id="diagObservaciones" rows="3" style="width:100%;font:inherit;border:1px solid #cbd7e2;border-radius:9px;padding:12px;resize:vertical" placeholder="Anota recomendaciones, hallazgos relevantes o acciones realizadas…"></textarea>
+          </div>
+        </div>
+
+        <!-- ── Historial de diagnósticos ──────────────────── -->
+        <div class="card" id="diagHistoryCard">
+          <div class="toolbar">
+            <h2 style="margin:0">Historial de diagnósticos</h2>
+          </div>
+          <div id="diagHistoryList">
+            <div class="diag-empty"><span>📋</span>Selecciona un equipo para ver su historial.</div>
           </div>
         </div>
       </section>

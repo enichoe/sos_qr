@@ -1,0 +1,419 @@
+/* =========================================================
+   SOS PC QR — Módulo Diagnóstico del Sistema
+   diagnostico.css  |  No modifica styles.css existente
+   ========================================================= */
+
+/* ── Cabecera del módulo ───────────────────────────────── */
+.diag-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+.diag-header h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #14283d;
+}
+.diag-meta {
+  font-size: 12px;
+  color: #64758a;
+}
+.diag-meta strong {
+  color: #13875c;
+}
+
+/* ── Barra de acciones ─────────────────────────────────── */
+.diag-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.diag-actions label {
+  flex: 1 1 220px;
+  font-size: 13px;
+  font-weight: 650;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.diag-actions select {
+  font: inherit;
+  border: 1px solid #cbd7e2;
+  border-radius: 9px;
+  padding: 10px 12px;
+  background: white;
+  color: #172c41;
+  width: 100%;
+}
+.btn-import {
+  background: #1a6fcf;
+  color: white;
+  border-color: #1a6fcf;
+  font-weight: 650;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+  align-self: flex-end;
+}
+.btn-import:hover { background: #155baa; }
+.btn-save {
+  background: #13875c;
+  color: white;
+  border-color: #13875c;
+  font-weight: 650;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+  align-self: flex-end;
+}
+.btn-save:hover { background: #0f704d; }
+.btn-pdf {
+  background: #7c3aed;
+  color: white;
+  border-color: #7c3aed;
+  font-weight: 650;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+  align-self: flex-end;
+}
+.btn-pdf:hover { background: #6025c4; }
+.btn-download-tool {
+  background: #d38a18;
+  color: white;
+  border-color: #d38a18;
+  font-weight: 650;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+  align-self: flex-end;
+}
+.btn-download-tool:hover { background: #b5740e; }
+
+/* Input file oculto */
+#diagFileInput { display: none; }
+
+/* ── Instrucciones (estado vacío) ──────────────────────── */
+.diag-instructions {
+  background: linear-gradient(135deg, #f0f7ff 0%, #e8f5f0 100%);
+  border: 2px dashed #a2c8e0;
+  border-radius: 16px;
+  padding: 40px 32px;
+  text-align: center;
+  margin-bottom: 24px;
+}
+.diag-instructions .diag-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+.diag-instructions h3 {
+  color: #14283d;
+  margin: 0 0 8px;
+  font-size: 20px;
+}
+.diag-instructions p {
+  color: #6a7b8c;
+  max-width: 520px;
+  margin: 0 auto 20px;
+  line-height: 1.6;
+}
+.diag-steps {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+.diag-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border: 1px solid #dce5ed;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 13px;
+  color: #14283d;
+}
+.diag-step-num {
+  width: 24px;
+  height: 24px;
+  background: #13875c;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ── Grid de tarjetas de hardware ──────────────────────── */
+.diag-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 18px;
+  margin-bottom: 24px;
+}
+.diag-card {
+  background: white;
+  border: 1px solid #e0e8ef;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 4px 18px #18345008;
+  position: relative;
+  overflow: hidden;
+}
+.diag-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: 15px 15px 0 0;
+}
+.diag-card.cpu::before    { background: linear-gradient(90deg, #2563eb, #60a5fa); }
+.diag-card.ram::before    { background: linear-gradient(90deg, #059669, #34d399); }
+.diag-card.storage::before{ background: linear-gradient(90deg, #d97706, #fbbf24); }
+.diag-card.os::before     { background: linear-gradient(90deg, #7c3aed, #c4b5fd); }
+.diag-card.mobo::before   { background: linear-gradient(90deg, #db2777, #f9a8d4); }
+.diag-card.gpu::before    { background: linear-gradient(90deg, #0891b2, #67e8f9); }
+.diag-card.temps::before  { background: linear-gradient(90deg, #dc2626, #f87171); }
+
+.diag-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.diag-card-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.cpu    .diag-card-icon { background: #dbeafe; }
+.ram    .diag-card-icon { background: #d1fae5; }
+.storage .diag-card-icon { background: #fef3c7; }
+.os     .diag-card-icon { background: #ede9fe; }
+.mobo   .diag-card-icon { background: #fce7f3; }
+.gpu    .diag-card-icon { background: #cffafe; }
+.temps  .diag-card-icon { background: #fee2e2; }
+
+.diag-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #14283d;
+  margin: 0;
+}
+.diag-card-subtitle {
+  font-size: 12px;
+  color: #64758a;
+  margin: 0;
+}
+
+/* ── Filas de datos ────────────────────────────────────── */
+.diag-rows { display: flex; flex-direction: column; gap: 8px; }
+.diag-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f1f5f9;
+}
+.diag-row:last-child { border-bottom: none; padding-bottom: 0; }
+.diag-row-label { color: #6a7b8c; flex-shrink: 0; min-width: 100px; }
+.diag-row-value { color: #14283d; font-weight: 600; text-align: right; word-break: break-word; }
+.diag-row-value.na { color: #94a3b8; font-weight: 400; font-style: italic; }
+
+/* ── Barra de utilización / temperatura ────────────────── */
+.diag-bar-wrap { margin-top: 12px; }
+.diag-bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #6a7b8c;
+  margin-bottom: 5px;
+}
+.diag-bar {
+  height: 8px;
+  background: #e8f0f7;
+  border-radius: 100px;
+  overflow: hidden;
+}
+.diag-bar-fill {
+  height: 100%;
+  border-radius: 100px;
+  transition: width 0.6s cubic-bezier(.25,.8,.25,1);
+}
+.diag-bar-fill.ok   { background: linear-gradient(90deg, #10b981, #34d399); }
+.diag-bar-fill.warn { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.diag-bar-fill.hot  { background: linear-gradient(90deg, #ef4444, #f87171); }
+
+/* ── Badge de estado S.M.A.R.T. ───────────────────────── */
+.diag-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 650;
+  padding: 4px 10px;
+  border-radius: 100px;
+}
+.diag-badge.ok   { background: #d1fae5; color: #065f46; }
+.diag-badge.warn { background: #fef3c7; color: #92400e; }
+.diag-badge.bad  { background: #fee2e2; color: #991b1b; }
+.diag-badge.na   { background: #f1f5f9; color: #64758a; }
+
+/* ── Alerta de umbral ──────────────────────────────────── */
+.diag-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-top: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.diag-alert.warn { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+.diag-alert.hot  { background: #fff1f2; border: 1px solid #fecdd3; color: #9f1239; }
+.diag-alert.info { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; }
+
+/* ── Módulos de RAM ────────────────────────────────────── */
+.diag-ram-modules {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.diag-ram-slot {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #14532d;
+}
+.diag-ram-slot.empty {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: #94a3b8;
+}
+
+/* ── Tarjeta de disco individual ────────────────────────── */
+.diag-disk {
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+  padding: 14px;
+  margin-top: 10px;
+  background: #fffbeb;
+}
+.diag-disk:first-child { margin-top: 0; }
+.diag-disk-name {
+  font-weight: 700;
+  font-size: 13px;
+  color: #78350f;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── Historial de diagnósticos ─────────────────────────── */
+.diag-history-list { display: flex; flex-direction: column; gap: 12px; }
+.diag-history-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.diag-history-item:hover { background: #f0f7ff; }
+.diag-history-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: #13875c;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+.diag-history-info { flex: 1; }
+.diag-history-date { font-size: 13px; font-weight: 650; color: #14283d; }
+.diag-history-tech { font-size: 12px; color: #64758a; margin-top: 2px; }
+.diag-history-equip { font-size: 12px; color: #13875c; margin-top: 2px; }
+.diag-history-btn {
+  font-size: 12px;
+  padding: 6px 12px;
+  align-self: center;
+}
+
+/* ── Número resaltado ──────────────────────────────────── */
+.diag-big-num {
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1;
+  color: #14283d;
+}
+.diag-big-unit { font-size: 13px; color: #64758a; font-weight: 400; margin-left: 3px; }
+
+/* ── Spinner ───────────────────────────────────────────── */
+.diag-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  gap: 12px;
+  color: #64758a;
+  font-size: 14px;
+}
+.diag-spinner::before {
+  content: '';
+  width: 24px; height: 24px;
+  border: 3px solid #dce5ed;
+  border-top-color: #13875c;
+  border-radius: 50%;
+  animation: diag-spin 0.7s linear infinite;
+}
+@keyframes diag-spin { to { transform: rotate(360deg); } }
+
+/* ── Estado vacío ──────────────────────────────────────── */
+.diag-empty {
+  text-align: center;
+  padding: 32px;
+  color: #94a3b8;
+  font-size: 14px;
+}
+.diag-empty span { display: block; font-size: 36px; margin-bottom: 10px; }
+
+/* ── Responsive ────────────────────────────────────────── */
+@media (max-width: 720px) {
+  .diag-grid { grid-template-columns: 1fr; }
+  .diag-actions { flex-direction: column; }
+  .diag-steps { flex-direction: column; align-items: flex-start; }
+  .diag-header { flex-direction: column; align-items: flex-start; }
+}
+
+@media print {
+  .diag-actions,
+  .diag-instructions,
+  .diag-history-list,
+  #diagHistoryCard { display: none !important; }
+}
