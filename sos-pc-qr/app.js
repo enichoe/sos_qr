@@ -18,8 +18,8 @@ $('#equipoSelect').addEventListener('change',fillEquipo);
 $('#reportForm').addEventListener('submit',async ev=>{ev.preventDefault();if(!db)return message('#reportResult','Configura primero Supabase en config.js',true);const b=ev.submitter;b.disabled=true;const f=new FormData(ev.target);const args={p_solicitante:f.get('solicitante'),p_contacto:f.get('contacto'),p_equipo_id:f.get('equipo_id')||null,p_codigo_equipo:f.get('codigo_equipo'),p_ubicacion:f.get('ubicacion'),p_dispositivo:f.get('dispositivo'),p_categoria:f.get('categoria'),p_descripcion:f.get('descripcion'),p_aparicion:f.get('aparicion'),p_urgencia:f.get('urgencia')};const {data,error}=await db.rpc('reportar_incidencia',args);b.disabled=false;if(error)return message('#reportResult',error.message,true);const t=data?.[0];if(!t)return message('#reportResult','No se recibió el ticket',true);const u=new URL(location.href);u.search='';u.searchParams.set('view','consultar');u.searchParams.set('numero',t.numero);u.searchParams.set('token',t.token);$('#reportResult').innerHTML=`<div class="result"><strong>¡Reporte registrado! Ticket #${esc(t.numero)}</strong><p>Guarda este enlace privado para consultar tu atención. No lo compartas públicamente.</p><a href="${esc(u.href)}">${esc(u.href)}</a><p><button type="button" id="copyLink">Copiar enlace</button></p></div>`;$('#copyLink').onclick=()=>navigator.clipboard.writeText(u.href);ev.target.reset();fillEquipo();});
 $('#consultForm').addEventListener('submit',async ev=>{ev.preventDefault();if(!db)return message('#consultResult','Configura Supabase primero',true);const f=new FormData(ev.target);const {data,error}=await db.rpc('consultar_ticket',{p_numero:Number(f.get('numero')),p_token:f.get('token')});if(error)return message('#consultResult',error.message,true);const t=data?.[0];if(!t)return message('#consultResult','Ticket no encontrado. Revisa número y token.',true);$('#consultResult').innerHTML=`<div class="result"><h3>Ticket #${esc(t.numero)}</h3><p><b>Estado:</b> ${esc(t.estado)} · <b>Prioridad:</b> ${esc(t.prioridad)}</p><p><b>Equipo:</b> ${esc(t.codigo_equipo||'No registrado')} · ${esc(t.ubicacion)}</p><p><b>Categoría:</b> ${esc(t.categoria)}</p><p><b>Problema:</b> ${esc(t.descripcion)}</p><p><b>Solución:</b> ${esc(t.solucion||'Aún no registrada')}</p><p><b>Recomendaciones:</b> ${esc(t.recomendaciones||'Pendientes')}</p><small>Actualizado: ${new Date(t.actualizado_en).toLocaleString('es-PE')}</small></div>`;});
 $('#loginForm').addEventListener('submit',async ev=>{ev.preventDefault();if(!db)return message('#loginMsg','Configura Supabase primero',true);const f=new FormData(ev.target);const {error}=await db.auth.signInWithPassword({email:f.get('email'),password:f.get('password')});if(error)return message('#loginMsg',error.message,true);await refreshAuth();});
-async function refreshAuth(){if(!db)return;const {data:{session:s}}=await db.auth.getSession();session=s;let p=null;if(s){const r=await db.from('profiles').select('rol,nombre').eq('id',s.user.id).maybeSingle();p=r.data;}role=p?.rol||'';const ok=!!p;$('#loginBox').hidden=ok;$('#dashboard').hidden=!ok;const navDiag=$('#navDiag');if(navDiag)navDiag.style.display=ok?'':'none';if(s&&!p){message('#loginMsg','Tu cuenta aún no tiene un perfil de técnico o administrador.',true);}if(ok){$('#userLabel').textContent=`${p.nombre} · ${p.rol}`;$('#equipForm').hidden=role!=='admin';$('#locationForm').hidden=role!=='admin';await Promise.all([loadTickets(),loadCatalog()]);renderInventory();if(diagModule)diagModule.onPanelOpen();}}
-$('#logout').onclick=async()=>{await db?.auth.signOut();session=null;role='';$('#loginBox').hidden=false;$('#dashboard').hidden=true;const navDiag=$('#navDiag');if(navDiag)navDiag.style.display='none';};
+async function refreshAuth(){if(!db)return;const {data:{session:s}}=await db.auth.getSession();session=s;let p=null;if(s){const r=await db.from('profiles').select('rol,nombre').eq('id',s.user.id).maybeSingle();p=r.data;}role=p?.rol||'';const ok=!!p;$('#loginBox').hidden=ok;$('#dashboard').hidden=!ok;const navDiag=$('#navDiag');if(navDiag)navDiag.style.display=ok?'':'none';if(s&&!p){message('#loginMsg','Tu cuenta aún no tiene un perfil de técnico o administrador.',true);}if(ok){$('#userLabel').textContent=`${p.nombre} · ${p.rol}`;$('#equipForm').hidden=role!=='admin';$('#locationForm').hidden=role!=='admin';await Promise.all([loadTickets(),loadCatalog()]);renderInventory();if(diagModule)diagModule.onPanelOpen();subscribeNewTickets();}}
+$('#logout').onclick=async()=>{await db?.auth.signOut();unsubscribeTickets();session=null;role='';$('#loginBox').hidden=false;$('#dashboard').hidden=true;const navDiag=$('#navDiag');if(navDiag)navDiag.style.display='none';};
 $('#refresh').onclick=loadTickets;
 async function loadTickets(){if(!db||!session)return;const [t,p]=await Promise.all([db.from('tickets').select('*').order('creado_en',{ascending:false}).limit(500),db.from('profiles').select('id,nombre,rol')]);if(t.error)return alert(t.error.message);tickets=t.data||[];profiles=p.data||[];$('#tecnicoSelect').innerHTML='<option value="">Sin asignar</option>'+profiles.map(x=>`<option value="${esc(x.id)}">${esc(x.nombre)} (${esc(x.rol)})</option>`).join('');const count=state=>tickets.filter(t=>t.estado===state).length;$('#stats').innerHTML=[['Total',tickets.length],['Pendientes',count('Pendiente')],['En atención',tickets.filter(t=>['Asignado','En diagnóstico','En atención'].includes(t.estado)).length],['Cerrados',count('Cerrado')]].map(([n,v])=>`<article><strong>${v}</strong><small>${n}</small></article>`).join('');$('#ticketRows').innerHTML=tickets.map(t=>`<tr><td>#${t.numero}<br><small>${new Date(t.creado_en).toLocaleDateString('es-PE')}</small></td><td>${esc(t.codigo_equipo||t.dispositivo)}<br><small>${esc(t.ubicacion)}</small></td><td>${esc(t.descripcion.slice(0,95))}</td><td><span class="tag ${esc(t.prioridad)}">${esc(t.prioridad)}</span></td><td>${esc(t.estado)}</td><td><button data-edit="${esc(t.id)}">Atender</button></td></tr>`).join('')||'<tr><td colspan="6">No hay tickets.</td></tr>';$$('[data-edit]').forEach(b=>b.onclick=()=>editTicket(b.dataset.edit));}
 async function editTicket(id){const t=tickets.find(x=>x.id===id);if(!t)return;$('#editBox').hidden=false;$('#editTicketNum').textContent='#'+t.numero;const f=$('#editForm');for(const key of ['id','estado','prioridad','tecnico_id','pruebas','diagnostico','solucion','recomendaciones'])f.elements[key].value=t[key]||'';f.elements.nota.value='';$('#editMsg').textContent='';const {data,error}=await db.from('ticket_historial').select('estado,nota,creado_en').eq('ticket_id',id).order('creado_en',{ascending:false});$('#history').innerHTML=error?esc(error.message):(data||[]).map(h=>`<div><b>${esc(h.estado)}</b> · <small>${new Date(h.creado_en).toLocaleString('es-PE')}</small><p>${esc(h.nota||'Sin nota')}</p></div>`).join('');$('#editBox').scrollIntoView({behavior:'smooth'});}
@@ -46,6 +46,90 @@ if(btnDlTool)btnDlTool.onclick=async()=>{
   showDiagToolModal();
 };
 if(db)db.auth.onAuthStateChange(()=>{if($('#panel').classList.contains('active'))setTimeout(refreshAuth,0)});
+
+/* ── Notificación de nuevo ticket ─────────────────────────── */
+let _ticketChannel=null;
+
+function playNotifSound(){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    // Triple tono ascendente tipo notificación premium
+    const notes=[523.25,659.25,783.99]; // Do-Mi-Sol
+    notes.forEach((freq,i)=>{
+      const osc=ctx.createOscillator();
+      const gain=ctx.createGain();
+      osc.connect(gain);gain.connect(ctx.destination);
+      osc.type='sine';
+      osc.frequency.value=freq;
+      const t=ctx.currentTime+i*0.12;
+      gain.gain.setValueAtTime(0,t);
+      gain.gain.linearRampToValueAtTime(0.28,t+0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001,t+0.38);
+      osc.start(t);osc.stop(t+0.4);
+    });
+  }catch(e){console.warn('Audio no disponible',e);}
+}
+
+function showTicketNotif(ticket){
+  // Eliminar modal previo si existe
+  document.getElementById('ticketNotifOverlay')?.remove();
+
+  const urgBadgeClass=ticket.prioridad||'Media';
+  const overlay=document.createElement('div');
+  overlay.id='ticketNotifOverlay';
+  overlay.innerHTML=`
+    <div id="ticketNotifBox">
+      <div class="tn-pulse-ring">🎫</div>
+      <div class="tn-header">
+        <div class="tn-label">Nuevo ticket recibido</div>
+        <h2 class="tn-title">Incidencia #${esc(String(ticket.numero))}</h2>
+      </div>
+      <div class="tn-body">
+        <div class="tn-row"><strong>Solicitante</strong><span>${esc(ticket.solicitante||'—')}</span></div>
+        <div class="tn-row"><strong>Equipo</strong><span>${esc(ticket.codigo_equipo||ticket.dispositivo||'—')}</span></div>
+        <div class="tn-row"><strong>Ubicación</strong><span>${esc(ticket.ubicacion||'—')}</span></div>
+        <div class="tn-row"><strong>Categoría</strong><span>${esc(ticket.categoria||'—')}</span></div>
+        <div class="tn-row"><strong>Prioridad</strong><span><span class="tn-badge ${esc(urgBadgeClass)}">${esc(urgBadgeClass)}</span></span></div>
+        <div class="tn-row"><strong>Descripción</strong><span>${esc((ticket.descripcion||'').slice(0,140))}</span></div>
+      </div>
+      <div class="tn-footer">
+        <button class="tn-btn-primary" id="tnBtnAtender">🛠️ Atender ahora</button>
+        <button class="tn-btn-secondary" id="tnBtnClose">Cerrar</button>
+      </div>
+    </div>`;
+
+  function closeNotif(){
+    overlay.classList.add('tn-hide');
+    setTimeout(()=>overlay.remove(),280);
+  }
+
+  overlay.querySelector('#tnBtnAtender').onclick=()=>{
+    closeNotif();
+    show('panel');
+    // Pequeño retraso para que el panel cargue antes de hacer scroll al ticket
+    setTimeout(()=>loadTickets(),400);
+  };
+  overlay.querySelector('#tnBtnClose').onclick=closeNotif;
+  overlay.addEventListener('click',e=>{if(e.target===overlay)closeNotif();});
+
+  document.body.appendChild(overlay);
+  playNotifSound();
+}
+
+function subscribeNewTickets(){
+  if(!db||_ticketChannel)return;
+  _ticketChannel=db
+    .channel('new-tickets-notif')
+    .on('postgres_changes',
+      {event:'INSERT',schema:'public',table:'tickets'},
+      ({new:t})=>showTicketNotif(t)
+    )
+    .subscribe();
+}
+
+function unsubscribeTickets(){
+  if(_ticketChannel){db.removeChannel(_ticketChannel);_ticketChannel=null;}
+}
 function showDiagToolModal(){
   // Crear modal si no existe aún
   if(!document.getElementById('diagToolModal')){
